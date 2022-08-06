@@ -8,11 +8,11 @@
 @time: 2022/7/17
 """
 import logging
+from typing import Tuple
 
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from torch import FloatTensor, LongTensor
+from torch import FloatTensor
 from torch.utils.data import Dataset
 from torch.utils.data.dataset import T_co
 
@@ -92,7 +92,7 @@ def process_raw_data():
 
 
 class BinaryDataset(Dataset):
-    RANDOM_STATE = 42
+    RANDOM_STATE = np.random.default_rng()
     FILE_PATH = "./data/data.csv"
 
     def __init__(self, training: bool):
@@ -111,7 +111,7 @@ class BinaryDataset(Dataset):
         self.x_train, self.y_train, self.x_test, self.y_test = x_train, y_train, x_test, y_test
 
     @property
-    def data(self):
+    def data(self) -> Tuple[np.ndarray, np.ndarray]:
         if self.training:
             return self.x_train, self.y_train
         return self.x_test, self.y_test
@@ -128,7 +128,7 @@ class BinaryDataset(Dataset):
 
 
 class MultiDataset(Dataset):
-    RANDOM_STATE = 42
+    RANDOM_STATE = np.random.default_rng()
     FILE_PATH = "./data/data.csv"
 
     def __init__(self, training: bool):
