@@ -8,13 +8,17 @@
 @time: 2022/7/17
 """
 import logging
+import os.path
 from typing import Tuple
 
 import numpy as np
+import toad
 from sklearn.model_selection import train_test_split
 from torch import FloatTensor
 from torch.utils.data import Dataset
 from torch.utils.data.dataset import T_co
+
+from common import DATA_DIR
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
@@ -92,19 +96,26 @@ def process_raw_data():
 
 
 class BinaryDataset(Dataset):
-    RANDOM_STATE = np.random.default_rng()
-    FILE_PATH = "./data/data.csv"
+    RANDOM_STATE = 42
+    FILE_PATH = os.path.join(DATA_DIR, "data.csv")
 
     def __init__(self, training: bool):
         self.training = training
         data = pd.read_csv(self.FILE_PATH)
         to_drop = ["记帐号", "姓名", "科室", "出生日期", "手术日期", "肿块大小（彩超/CT）", "病理结果", "备注", "n麻醉费", "费用", "分级"]
         data.drop(to_drop, inplace=True, axis=1)
-        data.fillna(0, inplace=True)
-        self.vocab = data.drop(["恶性", "分期"], axis=1).columns.tolist()
+        data = data.loc[data["恶性"].isin([0, 1]), :]
+        data.drop("分期", axis=1, inplace=True)
 
-        label = data["恶性"].values
-        features = data.drop(["恶性", "分期"], axis=1).values
+        selected, dropped_lst = toad.selection.select(data, target='恶性', empty=0.5, iv=0.05, corr=0.7,
+                                                          return_drop=True)
+        logger.info(f"dropped_lst\n{dropped_lst}")
+
+        selected.fillna(0, inplace=True)
+        self.vocab = selected.drop("恶性", axis=1).columns.tolist()
+
+        label = selected["恶性"].values
+        features = selected.drop("恶性", axis=1).values
         x_train, x_test, y_train, y_test = train_test_split(features, label, test_size=0.5,
                                                             random_state=self.RANDOM_STATE)
 
@@ -128,18 +139,24 @@ class BinaryDataset(Dataset):
 
 
 class MultiDataset(Dataset):
-    RANDOM_STATE = np.random.default_rng()
-    FILE_PATH = "./data/data.csv"
+    RANDOM_STATE = 42
+    FILE_PATH = os.path.join(DATA_DIR, "data.csv")
 
     def __init__(self, training: bool):
         self.training = training
         data = pd.read_csv(self.FILE_PATH)
         to_drop = ["记帐号", "姓名", "科室", "出生日期", "手术日期", "肿块大小（彩超/CT）", "病理结果", "备注", "n麻醉费", "费用", "分级"]
         data.drop(to_drop, inplace=True, axis=1)
-        data = data.loc[data["恶性"] == 1, :]
-        self.vocab = data.drop(["恶性", "分期"], axis=1).columns.tolist()
-        label = data["分期"].values
-        features = data.drop(["恶性", "分期"], axis=1).values
+        data = data.loc[(data["恶性"] == 1) & (~data["分期"].isnull()), :]
+        data.drop("恶性", axis=1, inplace=True)
+
+        selected, dropped_lst = toad.selection.select(data, target='分期', empty=0.5, iv=0.05, corr=0.7,
+                                                          return_drop=True)
+        logger.info(f"dropped_lst\n{dropped_lst}")
+
+        self.vocab = selected.drop("分期", axis=1).columns.tolist()
+        label = selected["分期"].values
+        features = selected.drop("分期", axis=1).values
         x_train, x_test, y_train, y_test = train_test_split(features, label, test_size=0.5,
                                                             random_state=self.RANDOM_STATE)
 

@@ -34,12 +34,12 @@ class TestBinaryDataset(TestCase):
     def test_multi_classification_data(self):
         dataset = MultiDataset(training=True)
         x_train, y_train = dataset.data
-        self.assertEqual(x_train.shape, (259, 60))
-        self.assertEqual(y_train.shape, (259,))
-        self.assertEqual(len(dataset), 259)
+        self.assertEqual(x_train.shape, (248, 60))
+        self.assertEqual(y_train.shape, (248,))
+        self.assertEqual(len(dataset), 248)
 
         dataset = MultiDataset(training=False)
         x_test, y_test = dataset.data
-        self.assertEqual(x_test.shape, (260, 60))
-        self.assertEqual(y_test.shape, (260,))
-        self.assertEqual(len(dataset), 260)
+        self.assertEqual(x_test.shape, (249, 60))
+        self.assertEqual(y_test.shape, (249,))
+        self.assertEqual(len(dataset), 249)
