@@ -41,11 +41,11 @@ def compare_train_test(train: np.ndarray, test: np.ndarray, vocab: List[str]):
     data_max = np.max(data, axis=0).reshape(-1, 1)
     train_max = np.max(train, axis=0).reshape(-1, 1)
     test_max = np.max(test, axis=0).reshape(-1, 1)
-    res["All patients"] = [f"{np.float(mean_):.2f}({np.float(min_):.2f}-{np.float(max_):.2f})" for mean_, min_, max_ in
+    res["All patients"] = [f"{float(mean_):.2f}({float(min_):.2f}-{float(max_):.2f})" for mean_, min_, max_ in
                            zip(data_mean, data_min, data_max)]
-    res["Training cohort"] = [f"{np.float(mean_):.2f}({np.float(min_):.2f}-{np.float(max_):.2f})" for mean_, min_, max_
+    res["Training cohort"] = [f"{float(mean_):.2f}({float(min_):.2f}-{float(max_):.2f})" for mean_, min_, max_
                               in zip(train_mean, train_min, train_max)]
-    res["Test cohort"] = [f"{np.float(mean_):.2f}({np.float(min_):.2f}-{np.float(max_):.2f})" for mean_, min_, max_ in
+    res["Test cohort"] = [f"{float(mean_):.2f}({float(min_):.2f}-{float(max_):.2f})" for mean_, min_, max_ in
                           zip(test_mean, test_min, test_max)]
 
     ttest_result = ttest_ind(train, test, equal_var=False, random_state=np.random.default_rng())
