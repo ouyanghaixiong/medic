@@ -14,7 +14,7 @@ if __name__ == '__main__':
         'learning_rate': {'_type': 'choice', '_value': [3e-3, 3e-2, 3e-1]}
     }
     experiment = Experiment('local')
-    experiment.config.trial_command = 'python run.py'
+    experiment.config.trial_command = 'python run_dt.py'
     experiment.config.trial_code_directory = '.'
     experiment.config.search_space = search_space
     experiment.config.tuner.name = 'TPE'

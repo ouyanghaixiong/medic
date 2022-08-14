@@ -4,7 +4,7 @@
 """
 @author: bearouyang
 @contact: bearouyang@tencent.com
-@file: run.py
+@file: run_dt.py
 @time: 2022/8/6
 """
 import os
@@ -35,12 +35,12 @@ class LGBMBinary:
             'num_class': 1,
             'objective': "binary",
             'metric': "auc",
-            'num_leaves': 8,
-            'min_data': 10,
+            'num_leaves': 2,
+            'min_data': 2,
             'boost_from_average': True,
             'num_threads': -1,
-            'feature_fraction': 0.8,
-            'learning_rate': 0.001,
+            'feature_fraction': 0.6,
+            'learning_rate': 0.3,
         }
         self.num_boost_round = 1000
         self.model = None
@@ -78,6 +78,9 @@ class LGBMBinary:
         vocab: List[str] = BinaryDataset(training=False).vocab
         importance = pd.Series(self.model.feature_importance(), index=vocab).sort_values(key=lambda v: -v)
         logger.info(f"feature importance\n{importance}")
+
+    def predict(self, x: np.ndarray):
+        return self.model.predict(x)
 
 
 def main():

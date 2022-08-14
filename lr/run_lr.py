@@ -4,7 +4,7 @@
 """
 @author: bearouyang
 @contact: bearouyang@tencent.com
-@file: run.py
+@file: run_dt.py
 @time: 2022/8/6
 """
 import os
@@ -61,6 +61,9 @@ class LRPipeline:
         x_test, y_test = self.test_dataset.data
         roc = self._evaluate(x_test, y_test)
         logger.info(f"roc on test set {roc}")
+
+    def predict(self, x: np.ndarray):
+        return self.model.predict_proba(x)[:, 1]
 
 
 def main():

@@ -14,7 +14,7 @@ if __name__ == '__main__':
         'C': {'_type': 'choice', '_value': [1e-3, 1e-2, 1e-1, 1.0, 10.0, 100.0, 1000.0]}
     }
     experiment = Experiment('local')
-    experiment.config.trial_command = 'python run.py'
+    experiment.config.trial_command = 'python run_dt.py'
     experiment.config.trial_code_directory = '.'
     experiment.config.search_space = search_space
     experiment.config.tuner.name = 'TPE'

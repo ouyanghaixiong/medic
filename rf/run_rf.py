@@ -4,7 +4,7 @@
 """
 @author: bearouyang
 @contact: bearouyang@tencent.com
-@file: run.py
+@file: run_dt.py
 @time: 2022/8/6
 """
 import os
@@ -13,9 +13,9 @@ from argparse import ArgumentParser
 import joblib
 import nni
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold
-from sklearn.tree import DecisionTreeClassifier
 
 from common import get_logger, SAVE_DIR
 from dataset import BinaryDataset
@@ -23,7 +23,7 @@ from dataset import BinaryDataset
 logger = get_logger(__name__)
 
 
-class DTPipeline:
+class RFPipeline:
     def __init__(self):
         self.train_dataset = BinaryDataset(training=True)
         self.test_dataset = BinaryDataset(training=False)
@@ -40,7 +40,7 @@ class DTPipeline:
         f = StratifiedKFold()
         p = np.zeros_like(y)
         for fold, (idx_train, idx_valid) in enumerate(f.split(x, y)):
-            model = DecisionTreeClassifier(max_depth=self.params["max_depth"])
+            model = RandomForestClassifier(max_depth=self.params["max_depth"])
             model.fit(x[idx_train], y[idx_train])
             p[idx_valid] = model.predict_proba(x[idx_valid])[:, 1]
         roc = roc_auc_score(y, p)
@@ -49,7 +49,7 @@ class DTPipeline:
 
     def train(self):
         x, y = self.train_dataset.data
-        model = DecisionTreeClassifier(max_depth=self.params["max_depth"])
+        model = RandomForestClassifier(max_depth=self.params["max_depth"])
         model.fit(x, y)
         self.model = model
 
@@ -59,12 +59,15 @@ class DTPipeline:
         roc = roc_auc_score(y, p)
         logger.info(f"roc on test set {roc}")
 
+    def predict(self, x: np.ndarray):
+        return self.model.predict_proba(x)[:, 1]
+
 
 def main():
     parser = ArgumentParser()
     parser.add_argument("--train", action="store_true")
     args = parser.parse_args()
-    pipeline = DTPipeline()
+    pipeline = RFPipeline()
     if not args.train:
         pipeline.search()
     else:

@@ -18,14 +18,9 @@ from torch import FloatTensor
 from torch.utils.data import Dataset
 from torch.utils.data.dataset import T_co
 
-from common import DATA_DIR
+from common import DATA_DIR, get_logger
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level="INFO",
-)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 import pandas as pd
 
@@ -109,7 +104,7 @@ class BinaryDataset(Dataset):
 
         selected, dropped_lst = toad.selection.select(data, target='恶性', empty=0.5, iv=0.05, corr=0.7,
                                                           return_drop=True)
-        logger.info(f"dropped_lst\n{dropped_lst}")
+        logger.debug(f"dropped_lst\n{dropped_lst}")
 
         selected.fillna(0, inplace=True)
         self.vocab = selected.drop("恶性", axis=1).columns.tolist()

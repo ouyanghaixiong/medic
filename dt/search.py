@@ -14,7 +14,7 @@ if __name__ == '__main__':
         'max_depth': {'_type': 'choice', '_value': [2, 4, 8, 16, 32, 64]}
     }
     experiment = Experiment('local')
-    experiment.config.trial_command = 'python run.py'
+    experiment.config.trial_command = 'python run_dt.py'
     experiment.config.trial_code_directory = '.'
     experiment.config.search_space = search_space
     experiment.config.tuner.name = 'TPE'

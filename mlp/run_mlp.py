@@ -1,7 +1,7 @@
 """
 @author: ouyang
 @contact: ouyhaix@icoud.com
-@file: run.py
+@file: run_dt.py
 @time: 2022/8/7
 """
 
@@ -10,6 +10,7 @@ from argparse import ArgumentParser
 
 import joblib
 import nni
+import numpy as np
 import torch
 import torch.nn as nn
 from sklearn.metrics import roc_auc_score
@@ -128,6 +129,11 @@ class MLPBinary:
                 p = self.model(x).view(-1)
                 auc = roc_auc_score(y.cpu(), p.cpu())
                 logger.info(f"auc on test dataset {auc}")
+
+    def predict(self, x: np.ndarray):
+        with torch.no_grad():
+            x = torch.Tensor(x).to(self.DEVICE)
+            return self.model(x).view(-1).cpu().numpy()
 
 
 def main():
