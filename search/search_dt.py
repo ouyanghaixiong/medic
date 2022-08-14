@@ -4,7 +4,7 @@
 """
 @author: bearouyang
 @contact: bearouyang@tencent.com
-@file: search.py
+@file: search_dt.py
 @time: 2022/8/6
 """
 from nni.experiment import Experiment
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     }
     experiment = Experiment('local')
     experiment.config.trial_command = 'python run_dt.py'
-    experiment.config.trial_code_directory = '.'
+    experiment.config.trial_code_directory = './trials/'
     experiment.config.search_space = search_space
     experiment.config.tuner.name = 'TPE'
     experiment.config.tuner.class_args['optimize_mode'] = 'maximize'
