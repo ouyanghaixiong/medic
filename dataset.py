@@ -93,6 +93,37 @@ def process_raw_data():
 class BinaryDataset(Dataset):
     RANDOM_STATE = 42
     FILE_PATH = os.path.join(DATA_DIR, "data.csv")
+    COL_MAP = {
+        "白细胞": "WBC",
+        "中性粒": "NEUT#",
+        "淋巴": "LY#",
+        "单核": "MO#",
+        "嗜酸": "EO#",
+        "嗜碱": "BASO#",
+        "红细胞": "RBC",
+        "血红蛋白": "Hb",
+        "红细胞比积": "Ht",
+        "钠": "Na",
+        "钾": "K",
+        "氯": "Cl",
+        "二氧化碳": "CO2",
+        "葡萄糖": "GLU",
+        "尿素": "BUN",
+        "肌酐": "SCr",
+        "尿酸": "UA",
+        "阴离子间隙": "AG",
+        "钙": "Ca",
+        "磷": "P",
+        "总蛋白": "TP",
+        "白蛋白": "ALB",
+        "球蛋白": "GLB",
+        "白球比": "A/G",
+        "总胆红素": "Tbil",
+        "结合胆红素": "Dbil",
+        "未结合胆红素": "Ibil",
+        "δ-胆红素": "δ-Bil",
+        "大血小板百分率": "unknown"
+    }
 
     def __init__(self, training: bool):
         self.training = training
@@ -103,11 +134,16 @@ class BinaryDataset(Dataset):
         data.drop("分期", axis=1, inplace=True)
 
         selected, dropped_lst = toad.selection.select(data, target='恶性', empty=0.5, iv=0.05, corr=0.7,
-                                                          return_drop=True)
+                                                      return_drop=True)
         logger.debug(f"dropped_lst\n{dropped_lst}")
 
         selected.fillna(0, inplace=True)
-        self.vocab = selected.drop("恶性", axis=1).columns.tolist()
+        self.vocab = []
+        for col in selected.drop("恶性", axis=1).columns.tolist():
+            if col in self.COL_MAP:
+                self.vocab.append(self.COL_MAP[col])
+            else:
+                self.vocab.append(col)
 
         label = selected["恶性"].values
         features = selected.drop("恶性", axis=1).values
@@ -136,6 +172,37 @@ class BinaryDataset(Dataset):
 class MultiDataset(Dataset):
     RANDOM_STATE = 42
     FILE_PATH = os.path.join(DATA_DIR, "data.csv")
+    COL_MAP = {
+        "白细胞": "WBC",
+        "中性粒": "NEUT#",
+        "淋巴": "LY#",
+        "单核": "MO#",
+        "嗜酸": "EO#",
+        "嗜碱": "BASO#",
+        "红细胞": "RBC",
+        "血红蛋白": "Hb",
+        "红细胞比积": "Ht",
+        "钠": "Na",
+        "钾": "K",
+        "氯": "Cl",
+        "二氧化碳": "CO2",
+        "葡萄糖": "GLU",
+        "尿素": "BUN",
+        "肌酐": "SCr",
+        "尿酸": "UA",
+        "阴离子间隙": "AG",
+        "钙": "Ca",
+        "磷": "P",
+        "总蛋白": "TP",
+        "白蛋白": "ALB",
+        "球蛋白": "GLB",
+        "白球比": "A/G",
+        "总胆红素": "Tbil",
+        "结合胆红素": "Dbil",
+        "未结合胆红素": "Ibil",
+        "δ-胆红素": "δ-Bil",
+        "大血小板百分率": "unknown"
+    }
 
     def __init__(self, training: bool):
         self.training = training
@@ -146,10 +213,15 @@ class MultiDataset(Dataset):
         data.drop("恶性", axis=1, inplace=True)
 
         selected, dropped_lst = toad.selection.select(data, target='分期', empty=0.5, iv=0.05, corr=0.7,
-                                                          return_drop=True)
+                                                      return_drop=True)
         logger.info(f"dropped_lst\n{dropped_lst}")
 
-        self.vocab = selected.drop("分期", axis=1).columns.tolist()
+        self.vocab = []
+        for col in selected.drop("恶性", axis=1).columns.tolist():
+            if col in self.COL_MAP:
+                self.vocab.append(self.COL_MAP[col])
+            else:
+                self.vocab.append(col)
         label = selected["分期"].values
         features = selected.drop("分期", axis=1).values
         x_train, x_test, y_train, y_test = train_test_split(features, label, test_size=0.5,

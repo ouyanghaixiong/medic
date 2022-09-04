@@ -21,13 +21,13 @@ class TestBinaryDataset(TestCase):
     def test_binary_classification_data(self):
         dataset = BinaryDataset(training=True)
         x_train, y_train = dataset.data
-        self.assertEqual(x_train.shape, (468, 60))
+        self.assertEqual(x_train.shape, (468, 45))
         self.assertEqual(y_train.shape, (468,))
         self.assertEqual(len(dataset), 468)
 
         dataset = BinaryDataset(training=False)
         x_test, y_test = dataset.data
-        self.assertEqual(x_test.shape, (468, 60))
+        self.assertEqual(x_test.shape, (468, 45))
         self.assertEqual(y_test.shape, (468,))
         self.assertEqual(len(dataset), 468)
 
